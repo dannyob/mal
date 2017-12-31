@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import System.IO
+import Reader
 
 malREAD :: String -> String
 malREAD x = x
