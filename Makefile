@@ -83,7 +83,7 @@ IMPLS = ada awk bash basic c chuck clojure coffee common-lisp cpp crystal cs d d
 	haxe hy io java js julia kotlin livescript logo lua make mal matlab miniMAL \
 	nim objc objpascal ocaml perl perl6 php pil plpgsql plsql powershell ps \
 	python r racket rexx rpython ruby rust scala scheme skew swift swift3 tcl \
-	ts vb vhdl vimscript yorick
+	ts vb vhdl vimscript yorick haskell2
 
 EXTENSION = .mal
 
@@ -198,6 +198,7 @@ groovy_STEP_TO_PROG =  groovy/$($(1)).groovy
 gst_STEP_TO_PROG =     gst/$($(1)).st
 guile_STEP_TO_PROG =   guile/$($(1)).scm
 haskell_STEP_TO_PROG = haskell/$($(1))
+haskell2_STEP_TO_PROG = haskell2/$($(1))
 haxe_STEP_TO_PROG =    $(haxe_STEP_TO_PROG_$(haxe_MODE))
 hy_STEP_TO_PROG =      hy/$($(1)).hy
 io_STEP_TO_PROG =      io/$($(1)).io
