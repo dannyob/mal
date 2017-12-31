@@ -1,13 +1,11 @@
-SOURCES_BASE = Readline.hs Types.hs Reader.hs Printer.hs
-SOURCES_LISP = Env.hs Core.hs step9_try.hs
+SOURCES_BASE = 
+SOURCES_LISP = 
 SOURCES = $(SOURCES_BASE) $(SOURCES_LISP)
 
 #####################
 
-SRCS = step0_repl.hs step1_read_print.hs step2_eval.hs step3_env.hs \
-       step4_if_fn_do.hs step5_tco.hs step6_file.hs step7_quote.hs \
-       step8_macros.hs step9_try.hs stepA_mal.hs
-OTHER_SRCS = Readline.hs Types.hs Reader.hs Printer.hs Env.hs Core.hs
+SRCS = step0_repl.hs 
+OTHER_SRCS = 
 BINS = $(SRCS:%.hs=%)
 
 #####################
