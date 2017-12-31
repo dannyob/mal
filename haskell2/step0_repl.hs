@@ -15,6 +15,8 @@ rep :: String -> String
 rep x = malPRINT $ malEVAL $ malREAD x
 
 repl = do
+    putStr "user> "
+    hFlush stdout
     input <- getLine
     putStrLn $ rep input
     hFlush stdout
