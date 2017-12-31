@@ -1,11 +1,11 @@
-SOURCES_BASE = Reader.hs
+SOURCES_BASE = 
 SOURCES_LISP = 
 SOURCES = $(SOURCES_BASE) $(SOURCES_LISP)
 
 #####################
 
 SRCS = step0_repl.hs  step1_read_print.hs
-OTHER_SRCS = 
+OTHER_SRCS =  Reader.hs
 BINS = $(SRCS:%.hs=%)
 
 #####################
