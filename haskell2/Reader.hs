@@ -25,6 +25,7 @@ tokenizer sofar remaining = do
         case regexp_results of
             Left a -> undefined
             Right Nothing -> return []
+            Right (Just (_, _ , after , [""])) -> tokenizer (return (unwrapped_sofar)) after
             Right (Just (_, _ , after , results)) -> tokenizer (return (unwrapped_sofar ++ results)) after
 
 
