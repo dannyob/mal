@@ -15,14 +15,16 @@ extracted_token =  do
         Right r -> return r
     
 
-tokenizer :: String -> IO ([String])
-tokenizer aline = do 
+tokenizer :: IO ([String]) -> String -> IO ([String])
+tokenizer sofar remaining = do 
+    unwrapped_sofar <- sofar
     my_token <- extracted_token
-    regexp_results <- TR.regexec my_token aline
-    case regexp_results of
-        Left a -> undefined
-        Right Nothing -> return []
-        Right (Just (before, after, _, results)) -> return results ++ tokenizer after
+    regexp_results <- TR.regexec my_token remaining
+    if (remaining == "") then sofar
+    else 
+        case regexp_results of
+            Left a -> undefined
+            Right Nothing -> return []
+            Right (Just (before, after, _, results)) -> tokenizer (return (unwrapped_sofar ++ results)) after
 
-    
 
