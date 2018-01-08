@@ -15,17 +15,21 @@ extracted_token =  do
         Right r -> return r
     
 
-tokenizer :: IO ([String]) -> String -> IO ([String])
-tokenizer sofar remaining = do 
-    unwrapped_sofar <- sofar
-    my_token <- extracted_token
-    regexp_results <- TR.regexec my_token remaining
-    if (remaining == "") then sofar
-    else 
-        case regexp_results of
-            Left a -> undefined
-            Right Nothing -> return []
-            Right (Just (_, _ , after , [""])) -> tokenizer (return (unwrapped_sofar)) after
-            Right (Just (_, _ , after , results)) -> tokenizer (return (unwrapped_sofar ++ results)) after
+type Readsource = IO ([String])
 
+tokenizer :: String -> Readsource
+tokenizer line = tokenizer' (return [""]) line
 
+tokenizer' :: Readsource -> String -> Readsource
+tokenizer' sofar remaining = do 
+case remaining of
+    "" -> sofar
+    _ -> do
+            unwrapped_sofar <- sofar
+            token_regexp <- extracted_token
+            regexp_results <- TR.regexec token_regexp remaining
+            case regexp_results of
+                Left a -> undefined
+                Right Nothing -> return []
+                Right (Just (_, _ , after , [""])) -> tokenizer' (return (unwrapped_sofar)) after
+                Right (Just (_, _ , after , results)) -> tokenizer' (return (unwrapped_sofar ++ results)) after
