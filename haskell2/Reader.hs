@@ -1,6 +1,7 @@
 module Reader (tokenizer) where
 
 import Text.Regex.PCRE.String as TR
+import MalType
 
 tokenregexp = "[\\s,]*(~@|[\\[\\]{}()'`~^@]|\"(?:\\\\.|[^\\\\\"])*\"|;.*|[^\\s\\[\\]{}('\"`,;)]*)"
 
@@ -15,12 +16,12 @@ extracted_token =  do
         Right r -> return r
     
 
-type Readsource = IO ([String])
+type ReadSource = IO ([String])
 
-tokenizer :: String -> Readsource
+tokenizer :: String -> ReadSource
 tokenizer line = tokenizer' (return [""]) line
 
-tokenizer' :: Readsource -> String -> Readsource
+tokenizer' :: ReadSource -> String -> ReadSource
 tokenizer' sofar remaining = do 
 case remaining of
     "" -> sofar
@@ -33,3 +34,16 @@ case remaining of
                 Right Nothing -> return []
                 Right (Just (_, _ , after , [""])) -> tokenizer' (return (unwrapped_sofar)) after
                 Right (Just (_, _ , after , results)) -> tokenizer' (return (unwrapped_sofar ++ results)) after
+
+read_form :: ReadSource -> IO (MalType, ReadSource)
+read_form source = do
+            s <- source
+            case (head first_token) of
+                '(' -> return read_list (return (tail source))
+                otherwise -> return (read_atom first_token, tail s)
+
+read_list :: ReadSource -> ([MalType], ReadSource)
+read_list = undefined
+
+read_atom :: String -> MalType
+read_atom = undefined
