@@ -1,5 +1,6 @@
 module Reader (tokenizer) where
 
+import Data.Char
 import Text.Regex.PCRE.String as TR
 import MalType
 
@@ -50,5 +51,9 @@ read_list (x:xs) =
     
 -- Dummy ReadAtom
 read_atom :: String -> MalType
-read_atom s = MalSymbol s
-
+read_atom s
+    | s == "nil" = MalNil
+    | s == "true" = MalTrue
+    | s == "false" = MalFalse
+    | Data.Char.isAlpha(head s) = MalSymbol s
+    | Data.Char.isDigit(head s) = MalNumber (read s)
