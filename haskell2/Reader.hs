@@ -40,6 +40,7 @@ read_form tokens = do
         otherwise -> (read_atom (head tokens), (tail tokens))
 
 read_list :: [String] -> ([MalType], [String])
+read_list [] = undefined
 read_list (x:xs) =
     let (first_list, rest_list) = read_list xs  in
     let (first_form, rest_form) = read_form (x:xs) in
