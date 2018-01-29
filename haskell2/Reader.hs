@@ -35,13 +35,13 @@ tokenizer' sofar remaining = do
 read_form :: [String] -> (MalType, [String])
 read_form tokens = do
     case (head tokens) of
-        '(' -> read_list (tail tokens)
+        "(" -> read_list (tail tokens)
         otherwise -> (read_atom (head tokens), (tail tokens))
 
-read_list :: [String] -> (MalList [MalType], [String])
+read_list :: [String] -> (MalType, [String])
 read_list (x:xs) =
     case x of
-        ')' -> (MalList [], xs)
+        ")" -> (MalList [], xs)
         otherwise -> (MalList (read_form(x:xs):read_list xs), xs)
     
 read_atom :: String -> MalType
