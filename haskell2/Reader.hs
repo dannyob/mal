@@ -42,7 +42,7 @@ read_list :: [String] -> (MalType, [String])
 read_list (x:xs) =
     case x of
         ")" -> (MalList [], xs)
-        otherwise -> (MalList (read_form(x:xs):read_list xs), xs)
+        otherwise -> (MalList (fst(read_form(x:xs)):fst (read_list xs)), xs)
     
 read_atom :: String -> MalType
 read_atom = undefined
