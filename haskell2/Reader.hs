@@ -34,16 +34,20 @@ tokenizer' sofar remaining = do
 
 read_form :: [String] -> (MalType, [String])
 read_form tokens = do
+    let (mallist, malrest) = read_list (tail tokens)
     case (head tokens) of
-        "(" -> read_list (tail tokens)
+        "(" -> (MalList mallist, malrest)
         otherwise -> (read_atom (head tokens), (tail tokens))
 
-read_list :: [String] -> (MalType, [String])
+read_list :: [String] -> ([MalType], [String])
 read_list (x:xs) =
+    let (first_list, rest_list) = read_list xs  in
+    let (first_form, rest_form) = read_form (x:xs) in
     case x of
-        ")" -> (MalList [], xs)
-        otherwise -> (MalList (fst(read_form(x:xs)):fst (read_list xs)), xs)
+        ")" -> ([], xs)
+        otherwise -> (first_form : (fst $ read_list rest_form), rest_list)
     
+-- Dummy ReadAtom
 read_atom :: String -> MalType
-read_atom = undefined
+read_atom s = MalSymbol s
 
