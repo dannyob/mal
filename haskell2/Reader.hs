@@ -16,7 +16,7 @@ extracted_token =  do
         Right r -> return r
     
 
-type ReadSource = IO ([String])
+type ReadSource = IO [String]
 
 tokenizer :: String -> ReadSource
 tokenizer line = tokenizer' (return [""]) line
