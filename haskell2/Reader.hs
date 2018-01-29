@@ -15,34 +15,30 @@ extracted_token =  do
         Left a -> undefined
         Right r -> return r
     
-
-type ReadSource = IO [String]
-
-tokenizer :: String -> ReadSource
+tokenizer :: String -> IO [String]
 tokenizer line = tokenizer' (return [""]) line
 
-tokenizer' :: ReadSource -> String -> ReadSource
+tokenizer' :: IO [String] -> String -> IO [String]
 tokenizer' sofar remaining = do 
-case remaining of
-    "" -> sofar
-    _ -> do
-            unwrapped_sofar <- sofar
-            token_regexp <- extracted_token
-            regexp_results <- TR.regexec token_regexp remaining
-            case regexp_results of
-                Left a -> undefined
-                Right Nothing -> return []
-                Right (Just (_, _ , after , [""])) -> tokenizer' (return (unwrapped_sofar)) after
-                Right (Just (_, _ , after , results)) -> tokenizer' (return (unwrapped_sofar ++ results)) after
+    case remaining of
+        "" -> sofar
+        _ -> do
+                unwrapped_sofar <- sofar
+                token_regexp <- extracted_token
+                regexp_results <- TR.regexec token_regexp remaining
+                case regexp_results of
+                    Left a -> undefined
+                    Right Nothing -> return []
+                    Right (Just (_, _ , after , [""])) -> tokenizer' (return (unwrapped_sofar)) after
+                    Right (Just (_, _ , after , results)) -> tokenizer' (return (unwrapped_sofar ++ results)) after
 
-read_form :: ReadSource -> IO (MalType, ReadSource)
+read_form :: [String] -> (MalType, [String])
 read_form source = do
-            s <- source
-            case (head first_token) of
-                '(' -> return read_list (return (tail source))
-                otherwise -> return (read_atom first_token, tail s)
+    s <- source
+    case (head s) of
+        '(' -> return read_list (return (tail s))
 
-read_list :: ReadSource -> ([MalType], ReadSource)
+read_list :: IO [String] -> ([MalType], IO [String])
 read_list = undefined
 
 read_atom :: String -> MalType
