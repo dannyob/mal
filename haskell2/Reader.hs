@@ -60,11 +60,24 @@ read_vector (x:xs) =
         "]" -> ([], xs)
         otherwise -> (first_form : (fst $ read_vector rest_form), rest_list)
 
--- Dummy ReadAtom
+-- This will crash with no base case if you somehow get it to attempt to
+-- read a string that doesn't end with a quotation mark.
+read_string False "\"" = ""
+read_string escaped (x:xs)
+    -- (These cases could be consolidated carefully with boolean logic.)
+    | escaped && (x == 'n') = '\n':(read_string False xs)
+    | escaped = x:(read_string False xs)
+    | x == '\\' = read_string True xs
+    | otherwise = x:(read_string False xs)
+
+read_string' (x:xs)
+    | x == '"' = read_string False xs
+
 read_atom :: String -> MalType
 read_atom s
     | s == "nil" = MalNil
     | s == "true" = MalTrue
     | s == "false" = MalFalse
+    | head s == '"' = MalString (read_string' s)
     | Data.Char.isAlpha(head s) = MalSymbol s
     | Data.Char.isDigit(head s) = MalNumber (read s)
