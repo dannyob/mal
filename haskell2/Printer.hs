@@ -2,12 +2,12 @@ module Printer (pr_str) where
 
 import MalType
 
-unescape "" = ""
-unescape (x:xs)
-    | x == '\n' = "\\n" ++ unescape xs
-    | x == '\\' = "\\\\" ++ unescape xs
-    | x == '"' = "\\\"" ++ unescape xs
-    | otherwise = x:(unescape xs)
+escape "" = ""
+escape (x:xs)
+    | x == '\n' = "\\n" ++ escape xs
+    | x == '\\' = "\\\\" ++ escape xs
+    | x == '"' = "\\\"" ++ escape xs
+    | otherwise = x:(escape xs)
 
 pr_list :: [MalType] -> String
 pr_list (x:xs)
@@ -20,6 +20,6 @@ pr_str MalTrue = "true"
 pr_str MalFalse = "false"
 pr_str (MalNumber n) = show n
 pr_str (MalSymbol s) = s
-pr_str (MalString s) = "\"" ++ (unescape s) ++ "\""
+pr_str (MalString s) = "\"" ++ (escape s) ++ "\""
 pr_str (MalList x) = "(" ++ (pr_list x) ++ ")"
 pr_str (MalVector x) = "[" ++ (pr_list x) ++ "]"
