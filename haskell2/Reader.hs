@@ -17,7 +17,7 @@ extracted_token =  do
         Right r -> return r
     
 tokenizer :: String -> IO [String]
-tokenizer line = tokenizer' (return [""]) line
+tokenizer line = tokenizer' (return []) line
 
 tokenizer' :: IO [String] -> String -> IO [String]
 tokenizer' sofar remaining = do 
