@@ -36,8 +36,10 @@ tokenizer' sofar remaining = do
 read_form :: [String] -> (MalType, [String])
 read_form tokens = do
     let (mallist, malrest) = read_list (tail tokens)
+    let (malvec, malrest') = read_vector (tail tokens)
     case (head tokens) of
         "(" -> (MalList mallist, malrest)
+        "[" -> (MalVector malvec, malrest')
         otherwise -> (read_atom (head tokens), (tail tokens))
 
 read_list :: [String] -> ([MalType], [String])
@@ -48,7 +50,16 @@ read_list (x:xs) =
     case x of
         ")" -> ([], xs)
         otherwise -> (first_form : (fst $ read_list rest_form), rest_list)
-    
+
+read_vector :: [String] -> ([MalType], [String])
+read_vector [] = undefined
+read_vector (x:xs) =
+    let (first_list, rest_list) = read_vector xs  in
+    let (first_form, rest_form) = read_form (x:xs) in
+    case x of
+        "]" -> ([], xs)
+        otherwise -> (first_form : (fst $ read_vector rest_form), rest_list)
+
 -- Dummy ReadAtom
 read_atom :: String -> MalType
 read_atom s
