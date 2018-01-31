@@ -2,15 +2,17 @@
 
 import System.IO
 import Reader
+import Printer
+import MalType
 
-malREAD :: String -> String
-malREAD x = x
+malREAD :: String -> MalType
+malREAD x = fst $ read_form $ tokenizer x
 
-malEVAL :: String -> String
+malEVAL :: MalType -> MalType
 malEVAL x = x
 
-malPRINT :: String -> String
-malPRINT x = x
+malPRINT :: MalType -> String
+malPRINT x = pr_str x True
 
 rep :: String -> String
 rep x = malPRINT $ malEVAL $ malREAD x
