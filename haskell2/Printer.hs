@@ -10,6 +10,7 @@ escape (x:xs)
     | otherwise = x:(escape xs)
 
 pr_list :: [MalType] -> Bool -> String
+pr_list [] _ = ""
 pr_list (x:xs) print_readably
     | xs == [] = pr_str x print_readably
     | otherwise = (pr_str x print_readably) ++ " " ++ (pr_list xs print_readably)
