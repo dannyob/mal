@@ -80,5 +80,7 @@ read_atom s
     | s == "false" = MalFalse
     | head s == '"' = MalString (read_string' s)
     | Data.Char.isAlpha(head s) = MalSymbol s
-    -- TODO: MalSymbol should also cover some punctuation like "+"
+    | head s == '-' && length s > 1 && Data.Char.isDigit(head $ tail s) = MalNumber (read s)
     | Data.Char.isDigit(head s) = MalNumber (read s)
+    | elem (head s) "+-*/!%" = MalSymbol s
+    -- TODO: MalSymbol should possibly also cover some other leading punctuation
