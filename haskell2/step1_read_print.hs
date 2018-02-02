@@ -22,8 +22,10 @@ repl = do
     hFlush stdout
     input <- getLine
     tokens <- tokenizer input
-    putStrLn $ rep tokens
-    hFlush stdout
+    if tokens /= [] then do
+        putStrLn $ rep tokens
+        hFlush stdout
+    else return ()
     repl
 
 main = repl
