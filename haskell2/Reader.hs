@@ -61,11 +61,11 @@ read_string' (x:xs)
     | x == '"' = read_string False xs
 
 read_atom :: String -> MalType
+read_atom "nil" = MalNil
+read_atom "true" = MalTrue
+read_atom "false" = MalFalse
+read_atom s@('"':xs) = MalString (read_string' s)
 read_atom s
-    | s == "nil" = MalNil
-    | s == "true" = MalTrue
-    | s == "false" = MalFalse
-    | head s == '"' = MalString (read_string' s)
     | Data.Char.isAlpha(head s) = MalSymbol s
     | head s == '-' && length s > 1 && Data.Char.isDigit(head $ tail s) = MalNumber (read s)
     | Data.Char.isDigit(head s) = MalNumber (read s)
