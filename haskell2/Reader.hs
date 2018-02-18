@@ -36,29 +36,16 @@ tokenizer' sofar remaining = do
                     Right (Just (_, _ , after , results)) -> tokenizer' (return (unwrapped_sofar ++ results)) after
 
 read_form :: [String] -> (MalType, [String])
-read_form tokens = do
-    let (mallist, malrest) = read_list (tail tokens)
-    let (malvec, malrest') = read_vector (tail tokens)
-    case (head tokens) of
-        "(" -> (MalList mallist, malrest)
-        "[" -> (MalVector malvec, malrest')
-        otherwise -> (read_atom (head tokens), (tail tokens))
+read_form ("(":xs) = let (sequence, rest) = (read_sequential xs ")") in (MalList sequence, rest)
+read_form ("[":xs) = let (sequence, rest) = (read_sequential xs "]") in (MalVector sequence, rest)
+read_form (atom:xs) = (read_atom atom, xs)
 
-read_list :: [String] -> ([MalType], [String])
-read_list [] = undefined
-read_list (x:xs) =
+read_sequential :: [String] -> String -> ([MalType], [String])
+read_sequential [] delim = undefined
+read_sequential (x:xs) delim =
     let (first_form, rest_form) = read_form (x:xs) in
-    case x of
-        ")" -> ([], xs)
-        otherwise -> (first_form : (fst $ read_list rest_form), snd $ read_list rest_form)
-
-read_vector :: [String] -> ([MalType], [String])
-read_vector [] = undefined
-read_vector (x:xs) =
-    let (first_form, rest_form) = read_form (x:xs) in
-    case x of
-        "]" -> ([], xs)
-        otherwise -> (first_form : (fst $ read_vector rest_form), snd $ read_vector rest_form)
+    let rest_sequential = read_sequential rest_form delim in
+    if x == delim then ([], xs) else (first_form : fst rest_sequential, snd rest_sequential)
 
 -- This will crash with no base case if you somehow get it to attempt to
 -- read a string that doesn't end with a quotation mark.
