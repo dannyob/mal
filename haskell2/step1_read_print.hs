@@ -7,7 +7,7 @@ import MalType
 
 malREAD :: [String] -> Either String MalType
 malREAD x = do
-        rf <- read_form' x
+        rf <- read_form x
         return (fst $ rf)
 
 malEVAL :: MalType -> MalType

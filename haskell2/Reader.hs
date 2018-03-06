@@ -1,4 +1,4 @@
-module Reader (tokenizer, read_form, read_form') where
+module Reader (tokenizer, read_form) where
 
 import Data.Char
 import Text.Regex.PCRE.String as TR
@@ -35,35 +35,23 @@ tokenizer' sofar remaining = do
                     Right (Just (_, _ , after , [""])) -> tokenizer' (return (unwrapped_sofar)) after
                     Right (Just (_, _ , after , results)) -> tokenizer' (return (unwrapped_sofar ++ results)) after
 
-read_form :: [String] -> (MalType, [String])
-read_form ("(":xs) = let (sequence, rest) = (read_sequential xs ")") in (MalList sequence, rest)
-read_form ("[":xs) = let (sequence, rest) = (read_sequential xs "]") in (MalVector sequence, rest)
-read_form (atom:xs) = (read_atom atom, xs)
-
-read_form' :: [String] -> Either String (MalType, [String])
-read_form' ("(":xs) = do
-        (sequence, rest) <- (read_sequential' xs ")")
+read_form :: [String] -> Either String (MalType, [String])
+read_form ("(":xs) = do
+        (sequence, rest) <- (read_sequential xs ")")
         return (MalList sequence, rest)
-read_form' ("[":xs) = do
-        (sequence, rest) <- (read_sequential' xs "]")
+read_form ("[":xs) = do
+        (sequence, rest) <- (read_sequential xs "]")
         return (MalVector sequence, rest)
-read_form' (atom:xs) = do
-        a <- read_atom' atom
+read_form (atom:xs) = do
+        a <- read_atom atom
         return (a, xs)
 
-read_sequential :: [String] -> String -> ([MalType], [String])
-read_sequential [] delim = undefined
-read_sequential (x:xs) delim =
-    let (first_form, rest_form) = read_form (x:xs) in
-    let rest_sequential = read_sequential rest_form delim in
-    if x == delim then ([], xs) else (first_form : fst rest_sequential, snd rest_sequential)
-
-read_sequential' :: [String] -> String -> Either String ([MalType], [String])
-read_sequential' [] delim = Left $ "<Missing closing delimiter " ++ delim  ++ ">"
-read_sequential' (x:xs) delim = do
+read_sequential :: [String] -> String -> Either String ([MalType], [String])
+read_sequential [] delim = Left $ "<Missing closing delimiter " ++ delim  ++ ">"
+read_sequential (x:xs) delim = do
     if x == delim then Right $ ([], xs) else do
-        (first_form, rest_form) <- read_form' (x:xs)
-        rs <- read_sequential' rest_form delim
+        (first_form, rest_form) <- read_form (x:xs)
+        rs <- read_sequential rest_form delim
         return $ (first_form : fst rs, snd rs)
 
 -- This will crash with no base case if you somehow get it to attempt to
@@ -83,24 +71,12 @@ read_string' (x:xs)
 symbol_prefixes :: String
 symbol_prefixes = "+-*/!%"
 
-read_atom :: String -> MalType
-read_atom "nil" = MalNil
-read_atom "true" = MalTrue
-read_atom "false" = MalFalse
-read_atom s@('"':xs) = MalString (read_string' s)
+read_atom :: String -> Either String MalType
+read_atom "nil" = Right MalNil
+read_atom "true" = Right MalTrue
+read_atom "false" = Right MalFalse
+read_atom s@('"':xs) = Right $ MalString (read_string' s)
 read_atom s
-    | Data.Char.isAlpha(head s) = MalSymbol s
-    | head s == '-' && length s > 1 && Data.Char.isDigit(head $ tail s) = MalNumber (read s)
-    | Data.Char.isDigit(head s) = MalNumber (read s)
-    | elem (head s) symbol_prefixes = MalSymbol s
-    | otherwise = trace ("<"++s++">") MalNil
-
-read_atom' :: String -> Either String MalType
-read_atom' "nil" = Right MalNil
-read_atom' "true" = Right MalTrue
-read_atom' "false" = Right MalFalse
-read_atom' s@('"':xs) = Right $ MalString (read_string' s)
-read_atom' s
     | Data.Char.isAlpha(head s) = Right $ MalSymbol s
     | head s == '-' && length s > 1 && Data.Char.isDigit(head $ tail s) = Right $ MalNumber (read s)
     | Data.Char.isDigit(head s) = Right $ MalNumber (read s)
