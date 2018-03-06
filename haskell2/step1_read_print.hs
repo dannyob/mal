@@ -5,8 +5,10 @@ import Reader
 import Printer
 import MalType
 
-malREAD :: [String] -> MalType
-malREAD x = fst $ read_form x
+malREAD :: [String] -> Either String MalType
+malREAD x = do
+        rf <- read_form' x
+        return (fst $ rf)
 
 malEVAL :: MalType -> MalType
 malEVAL x = x
@@ -15,7 +17,9 @@ malPRINT :: MalType -> String
 malPRINT x = pr_str x True
 
 rep :: [String] -> String
-rep x = malPRINT $ malEVAL $ malREAD x
+rep x = case malREAD x of
+        Left err -> err
+        Right mts -> malPRINT $ malEVAL $ mts
 
 repl = do
     putStr "user> "
