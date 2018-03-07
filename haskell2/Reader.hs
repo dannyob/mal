@@ -78,6 +78,7 @@ read_atom "false" = Right MalFalse
 read_atom s@('"':xs) = Right $ MalString (read_string' s)
 read_atom s
     | Data.Char.isAlpha(head s) = Right $ MalSymbol s
+    | head s == ':' && length s > 1 = Right $ MalKeyword $ tail s
     | head s == '-' && length s > 1 && Data.Char.isDigit(head $ tail s) = Right $ MalNumber (read s)
     | Data.Char.isDigit(head s) = Right $ MalNumber (read s)
     | elem (head s) symbol_prefixes = Right $ MalSymbol s

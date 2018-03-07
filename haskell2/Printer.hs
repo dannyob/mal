@@ -21,6 +21,7 @@ pr_str MalTrue _ = "true"
 pr_str MalFalse _ = "false"
 pr_str (MalNumber n) _ = show n
 pr_str (MalSymbol s) _ = s
+pr_str (MalKeyword s) _ = ":" ++ s
 pr_str (MalString s) True = "\"" ++ (escape s) ++ "\""
 pr_str (MalString s) False = "\"" ++ s ++ "\""  -- I think maybe this isn't
                                                 -- supposed to have quotes
