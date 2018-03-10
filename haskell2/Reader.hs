@@ -69,7 +69,7 @@ read_string' (x:xs)
 
 -- TODO: MalSymbol should possibly also cover some other leading punctuation
 symbol_prefixes :: String
-symbol_prefixes = "+-*/!%"
+symbol_prefixes = "+-*/!%="
 
 read_atom :: String -> Either String MalType
 read_atom "nil" = Right MalNil

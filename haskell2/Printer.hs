@@ -28,3 +28,4 @@ pr_str (MalString s) False = "\"" ++ s ++ "\""  -- I think maybe this isn't
                                                 -- around it in this case?
 pr_str (MalList x) print_readably = "(" ++ (pr_list x print_readably) ++ ")"
 pr_str (MalVector x) print_readably = "[" ++ (pr_list x print_readably) ++ "]"
+pr_str (MalBuiltinFunction x) _ = "<builtin function>"

@@ -4,7 +4,7 @@ SOURCES = $(SOURCES_BASE) $(SOURCES_LISP)
 
 #####################
 
-SRCS = step0_repl.hs  step1_read_print.hs
+SRCS = step0_repl.hs  step1_read_print.hs  step2_eval.hs
 OTHER_SRCS =  Reader.hs
 BINS = $(SRCS:%.hs=%)
 
