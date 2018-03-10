@@ -36,6 +36,16 @@ divided ((MalNumber m):(MalNumber n):_) = MalNumber (m `div` n)
 equals :: [MalType] -> MalType
 equals (m:n:_) = if (m==n) then MalTrue else MalFalse
 
+cons :: [MalType] -> MalType
+cons (x:MalNil:_) = MalList [x]
+cons (x:(MalList y):_) = MalList (x:y)
+
+car :: [MalType] -> MalType
+car (MalList (x:xs):_) = x
+
+cdr :: [MalType] -> MalType
+cdr (MalList (x:xs):_) = MalList xs
+
 unknownfunction :: [MalType] -> MalType
 unknownfunction _ = MalNil
 
@@ -49,7 +59,12 @@ repl_env = [("+", MalBuiltinFunction plus),
             ("*", MalBuiltinFunction times),
             ("/", MalBuiltinFunction divided),
             ("=", MalBuiltinFunction equals),
-            ("count", MalBuiltinFunction count)]
+            ("count", MalBuiltinFunction count),
+            ("cons", MalBuiltinFunction cons),
+            ("car", MalBuiltinFunction car),
+            ("cdr", MalBuiltinFunction cdr),
+            ("seventeen", MalNumber 17)
+           ]
 
 unwrap :: Maybe MalType -> MalType
 unwrap (Just x) = x
