@@ -66,4 +66,5 @@ unwrap Nothing = MalBuiltinFunction unknownfunction
 eval_ast :: [(String, MalType)] -> MalType -> MalType
 eval_ast env (MalSymbol x) = unwrap (lookup x env)
 eval_ast env (MalList x) = MalList (map (malEVAL env) x)
+eval_ast env (MalVector x) = MalVector (map (malEVAL env) x)
 eval_ast env x = x
