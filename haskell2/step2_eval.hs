@@ -5,6 +5,9 @@ import Reader
 import Printer
 import MalType
 import Eval
+import System.Console.Readline
+import Data.Maybe
+
 -- import Data.Map
 
 malREAD :: [String] -> Either String MalType
@@ -21,10 +24,9 @@ rep x = case malREAD x of
         Right mts -> malPRINT $ malEVAL repl_env mts
 
 repl = do
-    putStr "user> "
-    hFlush stdout
-    input <- getLine
-    tokens <- tokenizer input
+    minput <- readline "user> "
+    addHistory $ fromMaybe "" minput
+    tokens <- tokenizer $ fromMaybe "" minput
     if tokens /= [] then do
         putStrLn $ rep tokens
         hFlush stdout
