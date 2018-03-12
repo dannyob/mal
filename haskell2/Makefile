@@ -4,8 +4,8 @@ SOURCES = $(SOURCES_BASE) $(SOURCES_LISP)
 
 #####################
 
-SRCS = step0_repl.hs  step1_read_print.hs  step2_eval.hs
-OTHER_SRCS =  Reader.hs
+SRCS = step0_repl.hs  step1_read_print.hs  step2_eval.hs  step3_env.hs
+OTHER_SRCS =  Reader.hs Printer.hs Eval.hs MalType.hs Env.hs
 BINS = $(SRCS:%.hs=%)
 
 #####################
