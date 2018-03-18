@@ -22,6 +22,6 @@ find = undefined
 get :: MalEnv -> MalType -> Maybe MalEnv
 get = undefined
 
-testRootEnv = Data.Map.fromList [("seventeen", MalNumber 17)]
-testEnvEntry = MalEnvEntry Nothing testRootEnv
-env = MalEnv (DI.fromList [(0, testEnvEntry)]) 0
+emptyRootEnv = Data.Map.empty
+emptyEnvEntry = MalEnvEntry Nothing emptyRootEnv
+env = MalEnv (DI.fromList [(0, emptyEnvEntry)]) 0
