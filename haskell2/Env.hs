@@ -25,3 +25,8 @@ get = undefined
 emptyRootEnv = Data.Map.empty
 emptyEnvEntry = MalEnvEntry Nothing emptyRootEnv
 env = MalEnv (DI.fromList [(0, emptyEnvEntry)]) 0
+
+testRootEnv = Data.Map.fromList [("seventeen", MalNumber 17)]
+testChildEnv = Data.Map.fromList [("sixteen", MalNumber 16)]
+
+testEnv = MalEnv (DI.fromList [(0, MalEnvEntry Nothing testRootEnv), (1, MalEnvEntry (Just 0) testChildEnv)]) 1
