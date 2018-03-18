@@ -14,9 +14,6 @@ set (MalEnv oldBag current) (MalSymbol k) v =
         updateBag = DI.adjust updateEntry current oldBag in
         MalEnv updateBag current
 
-set _ _ _ = undefined
-
-
 find :: MalEnv -> MalType -> Maybe MalEnv
 find me@(MalEnv bag current) (MalSymbol k) =
     if Data.Map.member k (meData $ bag DI.! current) then 
@@ -26,8 +23,13 @@ find me@(MalEnv bag current) (MalSymbol k) =
             parent <- meOuter $ bag DI.! current
             find (MalEnv bag parent) (MalSymbol k)
 
-get :: MalEnv -> MalType -> Maybe MalEnv
-get = undefined
+getCurrentData :: MalEnv -> Map String MalType
+getCurrentData me@(MalEnv bag current) = meData (bag DI.! current)
+
+get :: MalEnv -> MalType -> Maybe MalType
+get me@(MalEnv bag current) (MalSymbol k)  = do
+    f <- find me (MalSymbol k)
+    Data.Map.lookup k (getCurrentData f)
 
 emptyRootEnv = Data.Map.empty
 emptyEnvEntry = MalEnvEntry Nothing emptyRootEnv
