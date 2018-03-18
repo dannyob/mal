@@ -16,8 +16,15 @@ set (MalEnv oldBag current) (MalSymbol k) v =
 
 set _ _ _ = undefined
 
-find :: MalEnv -> MalType -> MalEnv
-find = undefined
+
+find :: MalEnv -> MalType -> Maybe MalEnv
+find me@(MalEnv bag current) (MalSymbol k) =
+    if Data.Map.member k (meData $ bag DI.! current) then 
+    Just me
+    else
+        do
+            parent <- meOuter $ bag DI.! current
+            find (MalEnv bag parent) (MalSymbol k)
 
 get :: MalEnv -> MalType -> Maybe MalEnv
 get = undefined
