@@ -1,8 +1,9 @@
 module Eval (repl_env, malEVAL) where
 
 import MalType
+import Env
 
-malEVAL :: [(String, MalType)] -> MalType -> MalType
+malEVAL :: MalEnv -> MalType -> MalType
 malEVAL env (MalList []) = MalList []
 malEVAL env (MalList x) = case eval_ast env (MalList x) of
     MalList ((MalBuiltinFunction f):ys) -> (f ys)
@@ -63,8 +64,8 @@ unwrap Nothing = MalBuiltinFunction unknownfunction
 --       instead cause an error that interrupts interpretation but doesn't
 --       crash the interpreter.
 
-eval_ast :: [(String, MalType)] -> MalType -> MalType
-eval_ast env (MalSymbol x) = unwrap (lookup x env)
+eval_ast :: MalEnv -> MalType -> MalType
+eval_ast env (MalSymbol x) = unwrap (get env x)
 eval_ast env (MalList x) = MalList (map (malEVAL env) x)
 eval_ast env (MalVector x) = MalVector (map (malEVAL env) x)
 eval_ast env x = x
