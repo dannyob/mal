@@ -7,6 +7,7 @@ import MalType
 import Eval
 import System.Console.Readline
 import Data.Maybe
+import Env
 
 -- import Data.Map
 
@@ -18,19 +19,20 @@ malREAD x = do
 malPRINT :: MalType -> String
 malPRINT x = pr_str x True
 
-rep :: [String] -> String
-rep x = case malREAD x of
-        Left err -> err
-        Right mts -> malPRINT $ malEVAL repl_env mts
+rep :: MalEnv -> [String] -> (MalEnv, String)
+rep env x = case malREAD x of
+        Left err -> (env, err)
+        Right mts -> (env, malPRINT $ malEVAL env mts)
 
-repl = do
+repl environ = do
     minput <- readline "user> "
     addHistory $ fromMaybe "" minput
     tokens <- tokenizer $ fromMaybe "" minput
-    if tokens /= [] then do
-        putStrLn $ rep tokens
-        hFlush stdout
-    else return ()
-    repl
+    let (new_environ, output) = if tokens /= [] then rep environ tokens else (environ, "")
+    putStr output
+    putStr "\n"
+    hFlush stdout
+    repl new_environ
+    
 
-main = repl
+main = repl (mkMalEnv repl_env)
