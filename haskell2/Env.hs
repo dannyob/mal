@@ -16,7 +16,7 @@ set (MalEnv oldBag current) k v =
 
 find :: MalEnv -> String -> Maybe MalEnv
 find me@(MalEnv bag current) k =
-    if Data.Map.member k (meData $ bag DI.! current) then 
+    if Data.Map.member k (meData $ bag DI.! current) then
     Just me
     else
         do
