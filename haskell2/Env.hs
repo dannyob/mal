@@ -1,4 +1,4 @@
-module Env () where
+module Env (MalEnv, mkMalEnv) where
 import MalType
 import Data.Map
 import Data.Maybe
@@ -23,19 +23,13 @@ find me@(MalEnv bag current) (MalSymbol k) =
             parent <- meOuter $ bag DI.! current
             find (MalEnv bag parent) (MalSymbol k)
 
-getCurrentData :: MalEnv -> Map String MalType
-getCurrentData me@(MalEnv bag current) = meData (bag DI.! current)
-
 get :: MalEnv -> MalType -> Maybe MalType
 get me@(MalEnv bag current) (MalSymbol k)  = do
     f <- find me (MalSymbol k)
     Data.Map.lookup k (getCurrentData f)
 
-emptyRootEnv = Data.Map.empty
-emptyEnvEntry = MalEnvEntry Nothing emptyRootEnv
-env = MalEnv (DI.fromList [(0, emptyEnvEntry)]) 0
+mkMalEnv :: [(String,MalType)] -> MalEnv
+mkMalEnv xs = MalEnv (DI.fromList [(0, MalEnvEntry Nothing (Data.Map.fromList xs))]) 0
 
-testRootEnv = Data.Map.fromList [("seventeen", MalNumber 17)]
-testChildEnv = Data.Map.fromList [("sixteen", MalNumber 16)]
-
-testEnv = MalEnv (DI.fromList [(0, MalEnvEntry Nothing testRootEnv), (1, MalEnvEntry (Just 0) testChildEnv)]) 1
+getCurrentData :: MalEnv -> Map String MalType
+getCurrentData me@(MalEnv bag current) = meData (bag DI.! current)
