@@ -4,11 +4,13 @@ import MalType
 import Env
 
 malEVAL :: MalEnv -> MalType -> (MalEnv, MalType)
+malEVAL env (MalList ((MalSymbol "def!"):MalSymbol key:value:[])) = (set env key (snd (malEVAL env value)), MalNil)
 malEVAL env (MalList []) = (env, MalList [])
 malEVAL env (MalList x) = case eval_ast env (MalList x) of
     (e, MalList ((MalBuiltinFunction f):ys)) ->  (e, (f ys))
     -- TODO: Handle error case when we attempt to call a non-function by
     --       evaluating a list with a non-function as its first element.
+
 malEVAL env x = eval_ast env x
 
 plus :: [MalType] -> MalType
