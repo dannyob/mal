@@ -3,10 +3,10 @@ module Eval (repl_env, malEVAL) where
 import MalType
 import Env
 
-malEVAL :: MalEnv -> MalType -> MalType
-malEVAL env (MalList []) = MalList []
+malEVAL :: MalEnv -> MalType -> (MalEnv, MalType)
+malEVAL env (MalList []) = (env, MalList [])
 malEVAL env (MalList x) = case eval_ast env (MalList x) of
-    MalList ((MalBuiltinFunction f):ys) -> (f ys)
+    (e, MalList ((MalBuiltinFunction f):ys)) ->  (e, (f ys))
     -- TODO: Handle error case when we attempt to call a non-function by
     --       evaluating a list with a non-function as its first element.
 malEVAL env x = eval_ast env x
@@ -64,8 +64,10 @@ unwrap Nothing = MalBuiltinFunction unknownfunction
 --       instead cause an error that interrupts interpretation but doesn't
 --       crash the interpreter.
 
-eval_ast :: MalEnv -> MalType -> MalType
-eval_ast env (MalSymbol x) = unwrap (get env x)
-eval_ast env (MalList x) = MalList (map (malEVAL env) x)
-eval_ast env (MalVector x) = MalVector (map (malEVAL env) x)
-eval_ast env x = x
+eval_ast :: MalEnv -> MalType -> (MalEnv, MalType)
+eval_ast env (MalSymbol x) = (env, unwrap (get env x))
+-- The following may have to become folds or somesuch
+-- in order to collect changes in the environment:
+eval_ast env (MalList x) = (env, MalList (map (snd . malEVAL env) x))
+eval_ast env (MalVector x) = (env, MalVector (map (snd . malEVAL env) x))
+eval_ast env x = (env, x)

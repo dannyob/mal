@@ -22,7 +22,8 @@ malPRINT x = pr_str x True
 rep :: MalEnv -> [String] -> (MalEnv, String)
 rep env x = case malREAD x of
         Left err -> (env, err)
-        Right mts -> (env, malPRINT $ malEVAL env mts)
+        Right mts -> let (e, o) = malEVAL env mts in
+                     (e, malPRINT o)
 
 repl environ = do
     minput <- readline "user> "
@@ -33,6 +34,5 @@ repl environ = do
     putStr "\n"
     hFlush stdout
     repl new_environ
-    
 
 main = repl (mkMalEnv repl_env)
