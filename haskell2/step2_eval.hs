@@ -7,6 +7,7 @@ import MalType
 import Eval
 import System.Console.Readline
 import Data.Maybe
+import Env
 
 -- import Data.Map
 
@@ -21,7 +22,7 @@ malPRINT x = pr_str x True
 rep :: [String] -> String
 rep x = case malREAD x of
         Left err -> err
-        Right mts -> malPRINT $ malEVAL repl_env mts
+        Right mts -> malPRINT $ snd $ malEVAL (mkMalEnv repl_env) mts
 
 repl = do
     minput <- readline "user> "
