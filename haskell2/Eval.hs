@@ -5,6 +5,7 @@ import Env
 
 malEVAL :: MalEnv -> MalType -> (MalEnv, MalType)
 malEVAL env (MalList ((MalSymbol "def!"):MalSymbol key:value:[])) = defpling env key value
+malEVAL env (MalList ((MalSymbol "let*"):MalList bindings:result:[])) = letstar env bindings result
 malEVAL env (MalList []) = (env, MalList [])
 malEVAL env (MalList x) = case eval_ast env (MalList x) of
     (e, MalList ((MalBuiltinFunction f):ys)) ->  (e, (f ys))
@@ -13,6 +14,16 @@ malEVAL env (MalList x) = case eval_ast env (MalList x) of
 
 malEVAL env x = eval_ast env x
 
+letstar :: MalEnv -> [MalType] -> MalType -> (MalEnv, MalType)
+letstar env bindings result =
+    let newenv = addChildMalEnv env []
+        finalenv = multipledefs env bindings in
+    (env, snd $ malEVAL finalenv result)
+
+multipledefs :: MalEnv -> [MalType] -> MalEnv
+multipledefs env bindings@(MalSymbol key:z:xs) =
+    multipledefs (fst $ defpling env key z) xs
+multipledefs env [] = env
 
 defpling :: MalEnv -> String -> MalType -> (MalEnv, MalType)
 defpling env k v = let r = snd (malEVAL env v) in
