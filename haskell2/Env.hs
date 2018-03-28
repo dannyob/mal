@@ -1,4 +1,4 @@
-module Env (MalEnv, mkMalEnv, get, find, set) where
+module Env (MalEnv, addChildMalEnv, mkMalEnv, get, find, set) where
 import MalType
 import Data.Map
 import Data.Maybe
@@ -30,6 +30,13 @@ get me@(MalEnv bag current) k  = do
 
 mkMalEnv :: [(String,MalType)] -> MalEnv
 mkMalEnv xs = MalEnv (DI.fromList [(0, MalEnvEntry Nothing (Data.Map.fromList xs))]) 0
+
+addChildMalEnv :: MalEnv -> [(String, MalType)] -> MalEnv
+addChildMalEnv env xs =
+    let newId = succ $ fst $ DI.findMax (meBag env)
+        parentId = Just (meCurrent env)
+        newEnvEntry = MalEnvEntry parentId (Data.Map.fromList xs) in
+            MalEnv (DI.insert newId newEnvEntry (meBag env))  newId
 
 getCurrentData :: MalEnv -> Map String MalType
 getCurrentData me@(MalEnv bag current) = meData (bag DI.! current)
